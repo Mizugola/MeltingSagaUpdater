@@ -66,7 +66,9 @@ int main()
 	utext.setPosition(30, 105);
 	utext.setCharacterSize(16);
 	//gui.createLabel("info", "updateInfosContentLbl", 30, 45, updateContent, "weblysleekuil.ttf", 16, sf::Color::White);
-	//gui.createScrollBar("info", "updateScrollBar", 790, 0, 300, 0, false, infoContainer);
+	infoContainer->addScrollBar();
+	gui.createScrollBar("info", "updateScrollBar", 790, 0, 400, 50, false, infoContainer, "V2");
+	GUI::Widget::getWidgetByID<GUI::ScrollBar>("updateScrollBar")->computeDynamicScroll();
 
 	//Settings UI
 	gui.createLabel("stgs", "settingsTitleLbl", 10, 10, "Settings : ", "weblysleekuil.ttf", 24, sf::Color::Cyan);

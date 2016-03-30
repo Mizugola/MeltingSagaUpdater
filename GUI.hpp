@@ -15,10 +15,10 @@
 #include <functional>
 #include <typeinfo>
 #include <fstream>
-#include "dirent.h"
-#include "DataParser.h"
-#include "Functions.h"
-#include <gl/GL.h>
+
+#include "DataParser.hpp"
+#include "Functions.hpp"
+#include <GL/gl.h>
 
 //Finir updatePositions penser a aussi update les absolutes s'occuper de Write updatePositions et Droplist Updatepositions et les autre widget
 //bien gérer le move

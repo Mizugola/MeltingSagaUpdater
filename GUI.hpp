@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
+#include <vector>p
 #include <deque>
 #include <algorithm>
 #include <sstream>
@@ -582,7 +582,7 @@ namespace GUI
 		std::string fillingType;
 		int sideBordersWidth;
 		int TopBotBordersHeight;
-		int pixelsInPercent;
+		float pixelsPerPercent;
 		int fillingInPixels = 0;
 		int fillingInPercentage = 0;
 		double currentFillingPixels = 0;

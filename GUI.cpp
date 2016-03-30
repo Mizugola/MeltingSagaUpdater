@@ -1221,9 +1221,9 @@ void GUI::LoadingBar::setTexture()
 	sprites.resize(2);
 	setTextureMap(&sprites[0], nameImageBorder);
 	if (fillingType == "Horizontal")
-		pixelsInPercent = sprites[0].getGlobalBounds().width / 100;
+		pixelsPerPercent = sprites[0].getGlobalBounds().width / 100.0;
 	else if (fillingType == "Vertical")
-		pixelsInPercent = sprites[0].getGlobalBounds().height / 100;
+		pixelsPerPercent = sprites[0].getGlobalBounds().height / 100.0;
 	setTextureMap(&sprites[1], nameImageFiller);
 }
 
@@ -1234,15 +1234,15 @@ void GUI::LoadingBar::fill(int percentage, double timeToFill)
 	{
 		if (percentage >= 100)
 		{
-			currentPixelsPerDraw = (100 * pixelsInPercent - fillingInPixels) / (this->timeToFill / delay);
+			currentPixelsPerDraw = (100 * pixelsPerPercent - fillingInPixels) / (this->timeToFill / delay);
 			fillingInPercentage = 100;
-			fillingInPixels = 100 * pixelsInPercent;
+			fillingInPixels = sprites[0].getGlobalBounds().width;
 		}
 		else
 		{
-			currentPixelsPerDraw = (percentage * pixelsInPercent - fillingInPixels) / (this->timeToFill / delay);
+			currentPixelsPerDraw = (percentage * pixelsPerPercent - fillingInPixels) / (this->timeToFill / delay);
 			fillingInPercentage = percentage;
-			fillingInPixels = percentage * pixelsInPercent;
+			fillingInPixels = percentage * pixelsPerPercent;
 		}
 	}
 }
@@ -1252,13 +1252,13 @@ void GUI::LoadingBar::addFilling(int percentageToAdd)
 	if (fillingInPercentage + percentageToAdd >= 100)
 	{
 		fillingInPercentage = 100;
-		fillingInPixels = 100 * pixelsInPercent;
+		fillingInPixels = sprites[0].getGlobalBounds().width;
 		currentFillingPixels = fillingInPixels;
 	}
 	else
 	{
 		fillingInPercentage += percentageToAdd;
-		fillingInPixels += percentageToAdd * pixelsInPercent;
+		fillingInPixels += percentageToAdd * pixelsPerPercent;
 		currentFillingPixels = fillingInPixels;
 	}
 }
@@ -1374,7 +1374,6 @@ void GUI::ScrollBar::setTexture()
 
 void GUI::ScrollBar::updatePositions()
 {
-	std::cout << "up " << ID << " " << scroller->getRect().left << std::endl;
 	posX[1] = posX[0];
 
 	updateAbsolute();
@@ -2609,7 +2608,6 @@ void GUI::Movable::updateTexture(sf::Event& evnt)
 			posY[0] = absolutesY[0] - posContainerY;
 		}
 		updatePositions();
-		std::cout << "movCont" << ID << " " << posContainerX << " " << posX[0] << " " << absolutesX[0] << std::endl;
 }
 
 void GUI::Movable::updatePositions()

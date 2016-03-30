@@ -1,4 +1,4 @@
-#include "GUI.hpp"
+#include "GUI.h"
 
 namespace GUI
 {
@@ -901,6 +901,8 @@ void GUI::WidgetContainer::updateAll(sf::Event& evnt)
 {
 	if (displayed)
 	{
+		if (scroll != NULL)
+			scroll->computeDynamicScroll();
 		for (auto ite = widgetIDContainer.rbegin(); ite != widgetIDContainer.rend(); ite++)
 		{
 			sf::Rect<float> rect = (*ite)->getRect();
@@ -1276,6 +1278,7 @@ int GUI::LoadingBar::getFilling()
 
 void GUI::LoadingBar::draw(sf::RenderWindow* GUI)
 {
+
 	if (double(std::clock()) / CLOCKS_PER_SEC - timeBefore > delay && currentFillingPixels < fillingInPixels)
 	{
 		currentFillingPixels += currentPixelsPerDraw;
@@ -1365,13 +1368,13 @@ void GUI::ScrollBar::setTexture()
 	setTextureMap(&sprites[0], nameImageBar);
 	sprites[0].scale(1, size / (float)(sprites[0].getGlobalBounds().height));
 	computeDynamicScroll();
-	scroller->setPosConstraints(posX[0], posX[0], posContainerY + posY[0], posContainerY + posY[0] + sprites[0].getGlobalBounds().height - scroller->getRect().height);
+	scroller->setPosConstraints(posContainerX + posX[0], posContainerX + posX[0], posContainerY + posY[0], posContainerY + posY[0] + sprites[0].getGlobalBounds().height - scroller->getRect().height);
 	updatePositions();
 }
 
 void GUI::ScrollBar::updatePositions()
 {
-	std::cout << "up " << posY[0]<< std::endl;
+	std::cout << "up " << ID << " " << scroller->getRect().left << std::endl;
 	posX[1] = posX[0];
 
 	updateAbsolute();
@@ -1516,14 +1519,14 @@ void GUI::ScrollBar::computeDynamicScroll()
 		{
 			scrollToBottom();
 		}
-		scroller->setPosConstraints(posX[0], posX[0], posContainerY + posY[0], posContainerY + posY[0] + spriteHeight - scrollerHeight);
+		scroller->setPosConstraints(posContainerX + posX[0], posContainerX + posX[0], posContainerY + posY[0], posContainerY + posY[0] + spriteHeight - scrollerHeight);
 	}
 	else//On remet la scrollbar à sa taille normale
 	{
 		scroller->resize(scroller->getRect().width, sprites[0].getGlobalBounds().height);
 		scrollerHeight = scroller->getRect().height;
 
-		scroller->setPosConstraints(posX[0], posX[0], posContainerY + posY[0], posContainerY + posY[0] + spriteHeight - scrollerHeight);
+		scroller->setPosConstraints(posContainerX + posX[0], posContainerX + posX[0], posContainerY + posY[0], posContainerY + posY[0] + spriteHeight - scrollerHeight);
 		if (hasBeenResized)
 		{
 			scrollToTop();
@@ -1552,7 +1555,7 @@ void GUI::ScrollBar::replaceScrollerWidgets(int maxY, int spriteHeight, int spri
 			widgetsLinked[i]->move(0, distance);
 		}
 		posY[1] = posY[0] + spriteHeight  - scrollerHeight;
-		scroller->setPosition(posX[1], posY[1]);
+		scroller->setPosition(posX[0], posY[1]);
 	}
 }
 
@@ -1564,7 +1567,7 @@ void GUI::ScrollBar::scrollToBottom()
 		widgetsLinked[i]->move(0, -distance * movePerPixel);
 	}
 	posY[1] = posY[0] + sprites[0].getGlobalBounds().height - scroller->getRect().height;
-	scroller->setPosition(posX[1], posY[1]);
+	scroller->setPosition(posX[0], posY[1]);
 }
 
 void GUI::ScrollBar::scrollToTop()
@@ -1575,7 +1578,7 @@ void GUI::ScrollBar::scrollToTop()
 		widgetsLinked[i]->move(0, distance * movePerPixel);
 	}
 	posY[1] = posY[0];
-	scroller->setPosition(posX[1], posY[1]);
+	scroller->setPosition(posX[0], posY[1]);
 	updatePositions();
 }
 
@@ -2606,6 +2609,7 @@ void GUI::Movable::updateTexture(sf::Event& evnt)
 			posY[0] = absolutesY[0] - posContainerY;
 		}
 		updatePositions();
+		std::cout << "movCont" << ID << " " << posContainerX << " " << posX[0] << " " << absolutesX[0] << std::endl;
 }
 
 void GUI::Movable::updatePositions()
@@ -2783,7 +2787,7 @@ void GUI::Button::setText(std::string text, std::string font, sf::Color fontColo
 
 		selector.push_back(Display::WidgetContained);
 		buttonLabel = new Label(ID + "text", 0, 0, text, font, fontSize, fontColor, fontStyle);
-		buttonLabel->setAbsolute(posContainerX + relativeToButtonX, posContainerY + relativeToButtonY);
+		buttonLabel->setAbsolute(posContainerX, posContainerY);
 		buttonLabel->setSpritesPositions();
 		addContainedItem(buttonLabel->getDataObject());
 		hasText = true;
@@ -3844,6 +3848,12 @@ GUI::WidgetContainer* GUI::Container::createWidgetContainer(std::string containe
 bool GUI::WidgetContainer::getReleased()
 {
 	return justReleased;
+}
+
+void GUI::WidgetContainer::addScrollBar()
+{
+	scroll = container->createScrollBar(containerName, containerName + "scrollbar", width, 0, height, 100, false, widgetIDContainer, "V2");
+	scroll->setPosition(width - scroll->getRect().width, 0);
 }
 
 sf::Rect<float> GUI::WidgetContainer::getRect()

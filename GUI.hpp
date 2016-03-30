@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef DEF_GUI
+#define DEF_GUI
 
 #include <iostream>
 #include <string>
@@ -15,10 +16,9 @@
 #include <typeinfo>
 #include <fstream>
 #include "dirent.h"
-#include "DataParser.hpp"
-#include "Functions.hpp"
+#include "DataParser.h"
+#include "Functions.h"
 #include <gl/GL.h>
-
 
 //Finir updatePositions penser a aussi update les absolutes s'occuper de Write updatePositions et Droplist Updatepositions et les autre widget
 //bien gérer le move
@@ -594,7 +594,7 @@ namespace GUI
 
 	public:
 		LoadingBar(std::string ID, int posX, int posY, std::string fillingType, std::string style, int sideBordersWidth, int TopBotBordersHeight);
-		void fill(int percentage, double timeToFill = 0.5);//permet de remplir la barre jusqu'� un certain pourcentage
+		void fill(int percentage, double timeToFill = 0.5);//permet de remplir la barre jusqu'a un certain pourcentage
 		virtual void draw(sf::RenderWindow* GUI);
 		void addFilling(int percentageToAdd);//Permet d'ajouter un certain pourcentage au remplissage actuel de la barre
 		int getFilling();
@@ -749,6 +749,7 @@ namespace GUI
 		sf::RectangleShape background;
 		bool hasBackground = false;
 		sf::Event* evnt;
+		ScrollBar* scroll = NULL;
 
 	public:
 		WidgetContainer(std::string ID, int posX, int posY, int width, int height, GUI::ContainerMovement movable, int widthControlBar, int heightControleBar, sf::Event* evnt);
@@ -777,6 +778,7 @@ namespace GUI
 		void setBackground(sf::Color color);
 		void setDisplayed(bool set);
 		bool getDisplayed();
+		void addScrollBar();
 	};
 
 	class Container
@@ -861,3 +863,6 @@ template <typename T> T* stringToPointer(std::string address)
 {
 	return reinterpret_cast<T*>(stol(address, NULL, 16));
 }
+
+
+#endif

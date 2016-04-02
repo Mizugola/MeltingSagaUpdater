@@ -2913,6 +2913,13 @@ void GUI::Button::setDisplayed(bool displayed)
 	}
 }
 
+void GUI::Button::setTextureAll(const sf::Texture& texture)
+{
+	setTextureHover(texture);
+	setTextureIdle(texture);
+	setTexturePushed(texture);
+}
+
 void GUI::Button::setTextureHover(const sf::Texture& texture)
 {
 	widgetTextures[nameImageHover] = texture;

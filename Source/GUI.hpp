@@ -88,8 +88,9 @@ namespace GUI
 		};
 		enum TextInputFilters
 		{
-			Integers,
-			String,
+			Integer,
+			Alphabetic,
+			AlphaNumeric,
 			Lowercase,
 			Uppercase
 		};

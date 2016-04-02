@@ -914,6 +914,8 @@ void GUI::WidgetContainer::updateAll(sf::Event& evnt)
 {
 	if (displayed)
 	{
+		if (scroll != NULL)
+			scroll->computeDynamicScroll();
 		for (int i = 0; i < widgetIDContainer.size(); i++)
 		{
 			sf::Rect<float> rect = widgetIDContainer[i]->getRect();
@@ -3734,14 +3736,31 @@ void GUI::TextInput::moveCursorTextChanged(int enteredOrDeleted)
 
 bool GUI::TextInput::checkFilters(int c)
 {
+	bool isOk = true;
 	for (int i = 0; i < filters.size(); i++)
 	{
-		if (filters[i] == TextInputFilters::Integers)
+		if (filters[i] == TextInputFilters::Integer && c < 48 || c > 57)
 		{
-
+			isOk = false;
+		}
+		if (filters[i] == TextInputFilters::Alphabetic && c < 65 || c > 90 && c < 97 || c > 122 && c != 32)
+		{
+			isOk = false;
+		}
+		if (filters[i] == TextInputFilters::AlphaNumeric && c < 65 || c > 90 && c < 97 || c > 122 && c < 48 || c > 57 && c != 32)
+		{
+			isOk = false;
+		}
+		if (filters[i] == TextInputFilters::Uppercase && c < 65 || c > 90 && c != 32 && c < 48 || c > 57)
+		{
+			isOk = false;
+		}
+		if (filters[i] == TextInputFilters::Lowercase && c < 97 || c > 122 && c != 32 && c < 48 || c > 57)
+		{
+			isOk = false;
 		}
 	}
-	return true;
+	return isOk;
 }
 
 void GUI::TextInput::moveCursorRight()
@@ -3858,7 +3877,7 @@ void GUI::TextInput::updateTexture(sf::Event& evnt)
 						updatePositions();
 					}
 				}
-				else if (evnt.text.unicode < 128)
+				else if (evnt.text.unicode < 128 && checkFilters(evnt.text.unicode))
 				{
 					timeBefore = static_cast<float>(clock());
 					std::string s(1, static_cast<char>(evnt.text.unicode));

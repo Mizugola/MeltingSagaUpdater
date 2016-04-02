@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <vector>p
+#include <vector>
 #include <deque>
 #include <algorithm>
 #include <sstream>
@@ -16,6 +16,7 @@
 #include <typeinfo>
 #include <fstream>
 
+#include "RichText.hpp"
 #include "DataParser.hpp"
 #include "Functions.hpp"
 #include <GL/gl.h>
@@ -87,7 +88,7 @@ namespace GUI
 		std::string widgetStyle = "DEFAULT";
 		std::map<std::string, sf::Texture> widgetTextures;
 		std::vector<sf::Sprite> sprites;
-		std::vector<sf::Text> text;
+		std::vector<sfe::RichText> text;
 		std::vector<Widget*> widgetsContained;
 		std::vector<sf::Shape*> shapes;
 		std::deque<float> posX;
@@ -109,44 +110,8 @@ namespace GUI
 		Widget(std::string ID, int posX, int posY, std::string style);
 		~Widget();
 		virtual void setTexture();
-		//sf::Text* setTextRect(sf::Text* text);
+
 		void addContainedItem(DataObject* containedItem);
-
-		/*template <typename T> sf::Rect<int> createSubRect(T* drawable)
-		{
-			sf::Rect<float> rect = drawable->getGlobalBounds();
-			sf::Rect<int> newRect;
-			newRect.left = rect.left;
-			newRect.width = rect.width;
-			newRect.top = rect.top;
-			newRect.height = rect.height;
-			/*if (rect.top > posContainerY + containerHeight || rect.left > posContainerX + containerWidth)
-			{
-				newRect.width = 0;
-				newRect.height = 0;
-			}
-			else
-			{
-				if (rect.top + rect.height > posContainerY + containerHeight)
-				{
-					newRect.height = rect.height - (rect.top + rect.height - (posContainerY + containerHeight));
-				}
-				if (rect.top < posContainerY)
-				{
-					newRect.top = posContainerY;
-				}
-
-				if (rect.left + rect.width > posContainerX + containerWidth)
-				{
-					newRect.width = rect.width - (rect.left + rect.width - (posContainerX + containerWidth));
-				}
-				if (rect.left < posContainerX)
-				{
-					newRect.left = posContainerX;
-				}
-			}
-			return newRect;
-		}*/
 
 		template <typename T> void createAttribute(std::string name, T& attribute, std::string type)
 		{
@@ -159,42 +124,70 @@ namespace GUI
 			parser.createBaseAttribute(ID, ID + "/" + name, "value", (attribute));
 		}
 
-	public:
+		virtual void updatePositions();//Update sprite's positions
 
+		virtual void updateTexture(sf::Event& evnt);
+
+		void setTextureMap(sf::Sprite* sprite, std::string key);
+
+
+	public:
+		void autoLoad();//Loads widget's pictures
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+		//CLICK & HOVER EVENTS FUNCTIONS
 		bool isClicked(sf::Event& evnt, bool leftClick, bool rightClick);
 		bool isClickedOutside(sf::Event& evnt, bool leftClick, bool rightClick);
 		bool isRectClicked(sf::Event& evnt, sf::Rect<float> rect, bool leftClick, bool rightClick);
 		bool isRectClickedOutside(sf::Event& evnt, sf::Rect<float> rect, bool leftClick, bool righClick);
 		bool isRectHovering(sf::Event& evnt, sf::Rect<float> rect);
 		bool isHovering(sf::Event& evnt);
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
-		void autoLoad();
-		virtual void setPosition(int x, int y);
-		virtual void updatePositions();
-		void setSpritesPositions();
-		virtual void move(float x, float y);
-		std::string getID();
-		std::string getWidgetType();
-		std::string getWidgetStyle();
-		virtual void update(sf::Event& evnt);
-		virtual void clicked();//a virer
-		sf::Rect<float> getRect();
+		virtual void setPosition(int x, int y);//Set the widget's position to an x and y
+		virtual void move(float x, float y);//Move the widget from its current position
+
+		std::string getID();//Return widget ID
+		std::string getWidgetType();//Return widget type
+		std::string getWidgetStyle();//Return widget Style (Label, Button, ...)
+		std::vector<sfe::RichText>* getTexts();//Return the vector of richTexts
+
+		virtual void update(sf::Event& evnt);//update the widget's position, manage events.. This function is called in WidgetContainer::update(...)
+
+		void updateAbsolute();//Update absolute postions
+		void setSpritesPositions();//Apply positions changes
+
+		virtual void clicked();//a supprimer
+		sf::Rect<float> getRect();//Return the global bounds of the widget
+
+		//////////////////////////////
+		//Return the positions relative to the parent WidgetContainer
 		int getRelativePosX();
 		int getRelativePosY();
-		bool getDisplayed();
-		virtual void setDisplayed(bool set);
-		virtual void setAbsolute(int X, int Y);
-		virtual void updatePosContainer(int widgetContainerX, int widgetContainerY);
+		/////////////////////////////
+
+		bool getDisplayed();//Says if the widget is displayed
+
+		virtual void setDisplayed(bool set);//Set the widget display
+
+		virtual void setAbsolute(int X, int Y);//Set the widget's absolute position. This function has to be called only once per widget (usually automatically called by widgetContainer)
+
+		////////////////////////////////////////////////////////////////////////
+		//Functions used by WidgetContainer's when they move
 		void containerChangePos(int x, int y);
-		void updateAbsolute();
-		virtual void updateTexture(sf::Event& evnt);
-		virtual void draw(sf::RenderWindow *GUI);
-		virtual void updateAttributes();
+		void updatePosContainer(int widgetContainerX, int widgetContainerY);
+		////////////////////////////////////////////////////////////////////////
+
+		virtual void draw(sf::RenderWindow *GUI);//Draw the widget
+
+		virtual void updateAttributes();//This function is called when attributes edited through pointers need an update
+
 		virtual std::map<std::string, std::function<void()>> getFunctions();
 		virtual DataObject* getDataObject();
-		void addWidgetContained(Widget* widget);
 
-		void setTextureMap(sf::Sprite* sprite, std::string key);
+		void addWidgetContained(Widget* widget);
+		std::vector<GUI::Widget*> getWidgetsContained();
 
 		void removeWidget();
 
@@ -225,7 +218,6 @@ namespace GUI
 
 		template <typename T> static sf::Rect<float> getRectFromGroup(std::vector<T*> widgets)
 		{
-			//GUI::Widget first = dynamic_cast<Widget*>()
 			sf::Rect<float> rect(widgets.front()->getRect().left, widgets.front()->getRect().top, widgets.front()->getRect().left, widgets.front()->getRect().top);
 			int currX;
 			int currXPlusWidth;
@@ -271,29 +263,29 @@ namespace GUI
 		sf::Font font;
 		std::string fontString = "arial.ttf";
 		int fontSize = 15;
-		Color fontColor;
-		sf::Text::Style fontStyle;
 		virtual void updateTexture(sf::Event& evnt);
 		virtual void setTexture();
 
 	public:
 		Label(std::string ID, int posX, int posY, std::string text, std::string font, int fontSize, sf::Color color, sf::Text::Style fontStyle);
+		Label(std::string ID, int posX, int posY, std::string font, int fontSize);
+
 		void resetFontVars(std::string text, std::string font, int fontSize, sf::Color color, sf::Text::Style fontStyle);
 		void setFont(std::string font);
-		void setText(std::string text);
+		void setText(std::string text, sf::Color color, sf::Text::Style style = sf::Text::Regular);
+		void setComplexText(std::string complexText);
+		void addText(std::string text, sf::Color color, sf::Text::Style style = sf::Text::Regular);
 		void setFontSize(int fontSize);
-		void setFontColor(sf::Color color);
-		void setFontStyle(sf::Text::Style fontStyle);
 		void centerInRect(sf::Rect<float> rect);
 		std::string getString();
 		std::string getFontName();
 		int getfontSize();
-		sf::Color getColor();
 		virtual void updateAttributes();
 		std::string* getHook();
+		sfe::RichText* getRichText();
 	};
 
-	class NumericSlider : public Widget
+	/*class NumericSlider : public Widget
 	{
 	protected:
 		sf::Font font;
@@ -317,12 +309,13 @@ namespace GUI
 	public:
 		NumericSlider(std::string ID, int posX, int posY, int minValue, int maxValue, int defaultCursorValue, std::string style);
 		int getValue();
-	};
+	};*/
 
 	class TextInput : public Widget
 	{
 	protected:
 		Label* labelText;
+		sf::Color fontColor;
 		std::string inputText;
 		std::string *visibleText = &inputText;
 		std::string nameImageBackground = "background.png";
@@ -397,7 +390,7 @@ namespace GUI
 	public:
 		Button(std::string ID, int posX, int posY, std::string style, bool pushingEnable, bool hoveringEnable);
 		void setText(std::string text, std::string font, sf::Color fontColor, int fontSize, bool centered, int relativeToButtonX = 0, int relativeToButtonY = 0, sf::Text::Style fontStyle = sf::Text::Style::Regular);
-		void changeText(std::string text);
+		void changeText(std::string text, sf::Color color, sf::Text::Style style);
 		void setDefaultText();
 		void setLabelText(Label* text);
 		bool getJustClicked();
@@ -421,6 +414,7 @@ namespace GUI
 	protected:
 		std::string inputValue;
 		std::string* visibleValue = &inputValue;
+		sf::Color fontColor;
 		Label* labelText;
 		Button* arrowTop;
 		Button* arrowBot;
@@ -651,6 +645,7 @@ namespace GUI
 	{
 	protected:
 		Dropbox* currentContainer = NULL;
+		Label* labelText = NULL;
 		std::string nameImage = "texture.png";
 		int width;
 		int height;
@@ -838,7 +833,7 @@ namespace GUI
 		TextInput* createTextInput(std::string containerName, std::string ID, int posX, int posY, std::string defaultText, std::string font = "arial.ttf", int fontSize = 15, sf::Color fontColor = sf::Color::White, std::string style = "DEFAULT");
 		TextInput* createTextInput(std::string containerName, std::string ID, int posX, int posY, Label* text, std::string style = "DEFAULT");
 
-		NumericSlider* createNumericSlider(std::string containerName, std::string ID, int posX, int posY, int minValue, int maxValue, int defaultValue = 0, std::string style = "DEFAULT");
+		//NumericSlider* createNumericSlider(std::string containerName, std::string ID, int posX, int posY, int minValue, int maxValue, int defaultValue = 0, std::string style = "DEFAULT");
 		Movable* createMovable(std::string containerName, std::string ID, int posX, int posY, std::string style);
 		Movable* createMovable(std::string containerName, std::string ID, Dropbox* container, int marginLeft, int marginTop, std::string style);
 

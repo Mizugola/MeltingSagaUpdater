@@ -1,3 +1,6 @@
+//Author : Theo Cevaer
+//Key : 86d27c754f2ed9d671e7caf0a4cbb2ddb0c193631280bf65ffaddcb33e3949b8227c3161d8fd3326c541db064c98835f3eae6584d4bba3b8aaee57abea1448f2
+
 #include "GUI.hpp"
 
 namespace GUI
@@ -911,15 +914,12 @@ void GUI::WidgetContainer::updateAll(sf::Event& evnt)
 {
 	if (displayed)
 	{
-		if (scroll != NULL)
-			scroll->computeDynamicScroll();
-		for (auto ite = widgetIDContainer.rbegin(); ite != widgetIDContainer.rend(); ite++)
+		for (int i = 0; i < widgetIDContainer.size(); i++)
 		{
-			sf::Rect<float> rect = (*ite)->getRect();
-			//if ((*ite)->getDisplayed())
-			if((*ite)->getDisplayed() && !(rect.left + rect.width < posX || rect.left > posX + width || rect.top + rect.height < posY || rect.top > posY + height))
+			sf::Rect<float> rect = widgetIDContainer[i]->getRect();
+			if(widgetIDContainer[i]->getDisplayed() && !(rect.left + rect.width < posX || rect.left > posX + width || rect.top + rect.height < posY || rect.top > posY + height))
 			{
-				(*ite)->update(evnt);
+				widgetIDContainer[i]->update(evnt);
 			}
 		}
 	}
@@ -2911,21 +2911,21 @@ void GUI::Button::setDisplayed(bool displayed)
 	}
 }
 
-void GUI::Button::setTextureHover(sf::Texture& texture)
+void GUI::Button::setTextureHover(const sf::Texture& texture)
 {
 	widgetTextures[nameImageHover] = texture;
 	hoveringEnable = true;
 	setTexture();
 }
 
-void GUI::Button::setTextureIdle(sf::Texture& texture)
+void GUI::Button::setTextureIdle(const sf::Texture& texture)
 {
 	widgetTextures[nameImageIdle] = texture;
 	idleEnable = true;
 	setTexture();
 }
 
-void GUI::Button::setTexturePushed(sf::Texture& texture)
+void GUI::Button::setTexturePushed(const sf::Texture& texture)
 {
 	widgetTextures[nameImagePushed] = texture;
 	pushingEnable = true;

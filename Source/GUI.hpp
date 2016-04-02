@@ -1,5 +1,7 @@
-﻿#ifndef DEF_GUI
-#define DEF_GUI
+﻿//Author : Theo Cevaer
+//Key : 86d27c754f2ed9d671e7caf0a4cbb2ddb0c193631280bf65ffaddcb33e3949b8227c3161d8fd3326c541db064c98835f3eae6584d4bba3b8aaee57abea1448f2
+
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -19,10 +21,17 @@
 #include "RichText.hpp"
 #include "DataParser.hpp"
 #include "Functions.hpp"
+#if defined(WIN32) || defined(_WIN32)
+#include <Windows.h>
+#endif
 #include <GL/gl.h>
+
 
 //Finir updatePositions penser a aussi update les absolutes s'occuper de Write updatePositions et Droplist Updatepositions et les autre widget
 //bien gérer le move
+
+template <typename T> std::string pointerToString(const T* obj);
+template <typename T> T* stringToPointer(std::string address);
 
 class Color
 {
@@ -409,9 +418,9 @@ namespace GUI
 		bool getJustClicked();
 		std::string getString();
 		bool isPressed();
-		void setTextureHover(sf::Texture& texture);
-		void setTextureIdle(sf::Texture& texture);
-		void setTexturePushed(sf::Texture& texture);
+		void setTextureHover(const sf::Texture& texture);
+		void setTextureIdle(const sf::Texture& texture);
+		void setTexturePushed(const sf::Texture& texture);
 		virtual void setDisplayed(bool displayed);
 		virtual void updatePositions();
 		void bindFunction(std::function<void(DataObject*)> function, std::string parameters);
@@ -427,7 +436,6 @@ namespace GUI
 	protected:
 		std::string inputValue;
 		std::string* visibleValue = &inputValue;
-		sf::Color fontColor;
 		Label* labelText;
 		Button* arrowTop;
 		Button* arrowBot;
@@ -860,17 +868,14 @@ namespace GUI
 int convertMousePosX(int mousePosX);
 int convertMousePosY(int mousePosY);
 DataObject* parseBind(std::string str);
+
 template <typename T> std::string pointerToString(const T* obj)
 {
 	std::stringstream ss;
 	ss << obj;
 	return ss.str();
 }
-
 template <typename T> T* stringToPointer(std::string address)
 {
 	return reinterpret_cast<T*>(stol(address, NULL, 16));
 }
-
-
-#endif

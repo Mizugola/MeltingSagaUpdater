@@ -661,7 +661,7 @@ GUI::RadioButton* GUI::Container::createRadioButton(std::string containerName, s
 	}
 }
 
-GUI::NumericInput* GUI::Container::createNumericInput(std::string containerName, std::string ID, int posX, int posY, int defaultValue, std::string font, \
+/*GUI::NumericInput* GUI::Container::createNumericInput(std::string containerName, std::string ID, int posX, int posY, int defaultValue, std::string font, \
 	int fontSize, sf::Color fontColor, std::string style)
 {
 	if (widgetContainers.find(containerName) == widgetContainers.end())
@@ -692,7 +692,7 @@ GUI::NumericInput* GUI::Container::createNumericInput(std::string containerName,
 		widgetContainers[containerName]->addNewWidget(numericInput);
 		return numericInput;
 	}
-}
+}*/
 
 
 GUI::Checkbox* GUI::Container::createCheckbox(std::string containerName, std::string ID, int posX, int posY, std::string style, bool checked)
@@ -3112,7 +3112,7 @@ void GUI::Button::bindFunction(std::function<void()> function)
 	voidFunctionBinded = true;
 }
 
-GUI::NumericInput::NumericInput(std::string ID, int posX, int posY, int defaultValue, std::string style, std::string font, sf::Color fontColor, int fontSize) : Widget(ID, posX, posY, style)
+/*GUI::NumericInput::NumericInput(std::string ID, int posX, int posY, int defaultValue, std::string style, std::string font, sf::Color fontColor, int fontSize) : Widget(ID, posX, posY, style)
 {
 	this->widgetType = "NumericInput";
 
@@ -3366,7 +3366,7 @@ void GUI::NumericInput::updateTexture(sf::Event& evnt)
 		if (evnt.key.code == sf::Keyboard::Down)
 			arrowDownReleased = true;
 	}
-}
+}*/
 
 GUI::RadioButton::RadioButton(std::string ID, int posX, int posY, std::string value, std::string group, std::string style, bool isChecked) : Checkbox(ID, posX, posY, style, isChecked)
 {
@@ -3678,17 +3678,20 @@ void GUI::TextInput::updatePositions()
 
 void GUI::TextInput::updateTextPositionX()
 {
+	if (!textLarger)
+		textWasLarger = false;
 	textLarger = false;
 	*visibleText = inputText;
 	labelText->setText(*visibleText, fontColor, sf::Text::Regular);
 	labelText->setSpritesPositions();
-	this->posX[1] = posX[0] + sprites[0].getGlobalBounds().width - labelText->getRect().width - 7;
-	while (posX[1] <= posX[0])
+	this->posX[1] = posX[0] + 5;
+	while (posX[1] + labelText->getRect().width >= posX[0] + sprites[0].getGlobalBounds().width - 5)
 	{
 		(*visibleText).erase(0, 1);
 		labelText->setText(*visibleText, fontColor, sf::Text::Regular);
 		labelText->setSpritesPositions();
-		this->posX[1] = posX[0] + sprites[0].getGlobalBounds().width - labelText->getRect().width - 7;
+		this->posX[1] = posX[0] + 5;
+		textWasLarger = true;
 		textLarger = true;
 	}
 }
@@ -3721,11 +3724,24 @@ void GUI::TextInput::moveCursorTextChanged(int enteredOrDeleted)
 	charToMove.setString(inputText);
 	int currentWidth = charToMove.getGlobalBounds().width;
 	cursorPosition += enteredOrDeleted;
-	if (!textLarger)
+	if (!textWasLarger)
 	{
 		currentCursorOffset += (currentWidth - previousWidth);
 	}
+
 	previousWidth = currentWidth;
+}
+
+bool GUI::TextInput::checkFilters(int c)
+{
+	for (int i = 0; i < filters.size(); i++)
+	{
+		if (filters[i] == TextInputFilters::Integers)
+		{
+
+		}
+	}
+	return true;
 }
 
 void GUI::TextInput::moveCursorRight()
@@ -3868,6 +3884,11 @@ void GUI::TextInput::setText(std::string string)
 	updatePositions();
 }
 
+void GUI::TextInput::addFilter(GUI::TextInputFilters filter)
+{
+	filters.push_back(filter);
+}
+
 std::string GUI::TextInput::getText()
 {
 	return inputText;
@@ -3989,8 +4010,6 @@ void GUI::Container::updateAllContainer()
 	{
 		(*ite)->updateAll(*evnt);
 	}
-
-
 }
 
 void GUI::Container::setFocus(std::string widgetContainerName)
@@ -4240,13 +4259,13 @@ GUI::Widget* GUI::Container::loadWidget(std::string widgetContainerName, std::st
 		label = dynamic_cast<Label*>(loadWidget(widgetContainerName, dataObject, containedItems->getAllComplex()[0], path + "/" + name + "/" + "containedItem", data, true));
 		this->createTextInput(widgetContainerName, name, attributesFloat["posX"], attributesFloat["posY"], label, style);
 	}
-	else if (getType == "NumericInput")
+	/*else if (getType == "NumericInput")
 	{
 		ComplexAttribute* containedItems = widget->getComplexAttribute("containedItem");
 		Label* label = dynamic_cast<Label*>(loadWidget(widgetContainerName, dataObject, containedItems->getAllComplex()[0], path + "/" + name + "/" + "containedItem", data, true));;
 
 		this->createNumericInput(widgetContainerName, name, attributesFloat["posX"], attributesFloat["posY"], label, style);
-	}
+	}*/
 	else if (getType == "Dropbox")
 	{
 		this->createDropbox(widgetContainerName, name, attributesFloat["posX"], attributesFloat["posY"], style);

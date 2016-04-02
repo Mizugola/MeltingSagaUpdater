@@ -77,6 +77,14 @@ namespace GUI
 			Clicked,
 			Pressed
 		};
+		enum TextInputFilters
+		{
+			Integers,
+			String,
+			Lowercase,
+			Uppercase
+		};
+
 	class Widget
 	{
 	protected:
@@ -323,6 +331,7 @@ namespace GUI
 		std::string nameImageOutline = "outline.png";
 		bool hasFocus = false;
 		bool textLarger = false;
+		bool textWasLarger = false;
 		bool enterJustPressed = false;
 		clock_t timeBefore;
 		sf::Font fontCharMove;
@@ -337,6 +346,8 @@ namespace GUI
 		bool hasStartTimer = false;
 		bool unlockKeyRepeater = true;
 
+		std::vector<TextInputFilters> filters;
+
 		virtual void setTexture();
 		virtual void updateTexture(sf::Event& evnt);
 		void setFocus();
@@ -346,11 +357,13 @@ namespace GUI
 		void moveCursorRight();
 		void moveCursorLeft();
 		void moveCursorTextChanged(int enteredOrDeleted);
+		bool checkFilters(int c);
 
 	public:
 		TextInput(std::string ID, int posX, int posY, std::string font, int fontSize, sf::Color fontColor, std::string style, std::string defaultText);
 		TextInput(std::string ID, int posX, int posY, std::string style, GUI::Label* text);
 
+		void addFilter(GUI::TextInputFilters filter);
 		std::string getText();
 		void setText(std::string string);
 		bool getEnterPressed();
@@ -409,7 +422,7 @@ namespace GUI
 		virtual std::map<std::string, std::function<void()>> getFunctions();
 	};
 
-	class NumericInput : public Widget
+	/*class NumericInput : public TextInput
 	{
 	protected:
 		std::string inputValue;
@@ -445,7 +458,7 @@ namespace GUI
 
 		int getValue();
 		void setValue(int value);
-	};
+	};*/
 
 	class Checkbox : public Widget
 {
@@ -826,8 +839,8 @@ namespace GUI
 
 		Tab* createTab(std::string containerName, std::string ID, int posX, int posY, int fontSize, sf::Color fontColor, std::string font, std::vector<std::string> tabsNames, std::vector<WidgetContainer*> tabs, std::string style = "DEFAULT");
 		Dropbox* createDropbox(std::string containerName, std::string ID, int posX, int posY, std::string style = "DEFAULT");
-		NumericInput* createNumericInput(std::string containerName, std::string ID, int posX, int posY, int defaultValue = 0, std::string font = "arial.ttf", int fontSize = 15, sf::Color fontColor = sf::Color::White, std::string style = "DEFAULT");
-		NumericInput* createNumericInput(std::string containerName, std::string ID, int posX, int posY, Label* text, std::string style = "DEFAULT");
+		//NumericInput* createNumericInput(std::string containerName, std::string ID, int posX, int posY, int defaultValue = 0, std::string font = "arial.ttf", int fontSize = 15, sf::Color fontColor = sf::Color::White, std::string style = "DEFAULT");
+		//NumericInput* createNumericInput(std::string containerName, std::string ID, int posX, int posY, Label* text, std::string style = "DEFAULT");
 		
 		RadioButton* createRadioButton(std::string containerName, std::string ID, int posX, int posY, std::string value, std::string group, bool checked = false, std::string style = "DEFAULT");
 		TextInput* createTextInput(std::string containerName, std::string ID, int posX, int posY, std::string defaultText, std::string font = "arial.ttf", int fontSize = 15, sf::Color fontColor = sf::Color::White, std::string style = "DEFAULT");

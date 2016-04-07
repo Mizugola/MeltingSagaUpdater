@@ -43,29 +43,11 @@ int main()
 
 	//Infos UI
 	gui.createLabel("info", "updateInfosTitleLbl", 10, 10, "Update Informations : ", "weblysleekuil.ttf", 24, sf::Color::Cyan);
+	gui.createLabel("info", "updateInfosContLbl", 30, 45, "", "weblysleekuil.ttf", 16, sf::Color::White);
 	std::ifstream changelogFile("changelog.txt");
 	std::string updateContent((std::istreambuf_iterator<char>(changelogFile)),
 		std::istreambuf_iterator<char>());
-	std::vector<std::string> updateVec = fn::String::split(updateContent, "@");
-	sfe::RichText utext(font);
-	sf::Color cColor(255, 255, 255);
-	for (int i = 0; i < updateVec.size(); i++)
-	{
-		if (i % 2 != 0)
-		{
-			std::cout << updateVec[i] << std::endl;
-			utext << cColor << updateVec[i];
-		}
-		else
-		{
-			std::vector<std::string> allC = fn::String::split(updateVec[i], ",");
-			for (auto j : allC) { std::cout << "Col content : " << j << std::endl; }
-			cColor = sf::Color(std::stoi(allC[0]), std::stoi(allC[1]), std::stoi(allC[2]));
-		}
-	}
-	utext.setPosition(30, 105);
-	utext.setCharacterSize(16);
-	//gui.createLabel("info", "updateInfosContentLbl", 30, 45, updateContent, "weblysleekuil.ttf", 16, sf::Color::White);
+	GUI::Widget::getWidgetByID<GUI::Label>("updateInfosContLbl")->setComplexText(updateContent);
 	infoContainer->addScrollBar();
 	gui.createScrollBar("info", "updateScrollBar", 790, 0, 400, 50, false, infoContainer, "V2");
 	GUI::Widget::getWidgetByID<GUI::ScrollBar>("updateScrollBar")->computeDynamicScroll();
@@ -75,23 +57,19 @@ int main()
 
 	//Logs UI
 	gui.createLabel("logs", "logsTitleLbl", 10, 10, "Logs : ", "weblysleekuil.ttf", 24, sf::Color::Cyan);
-	sfe::RichText rtext(font);
-	rtext << sf::Color::White << "Connection to MeSa Server : 132.14.88.22:9022  < "
-		<< sf::Color::Green << "Done"
-		<< sf::Color::White << " >\n"
-		<< sf::Color::White << "GET : changelog.txt 200 OK < "
-		<< sf::Color::Green << "Done"
-		<< sf::Color::White << " >\n";
-
-	rtext.setPosition(30, 495);
-	rtext.setCharacterSize(16);
-
+	gui.createLabel("logs", "logsContLbl", 10, 45, "lolibork", "weblysleekuil.ttf", 16, sf::Color::White);
+	GUI::Widget::getWidgetByID<GUI::Label>("logsContLbl")->setComplexText("<color:255,255,255>Connection to MeSa Server : 132.14.88.22:9022 [ "
+		"<color:0,255,0>Done"
+		"<color:255,255,255> ]\n"
+		"GET : changelog.txt 200 OK [ "
+		"<color:0,255,0>Done"
+		"<color:255,255,255> ]\n");
 
 
 	GUI::ButtonEvent* appQuitBool = GUI::Widget::getWidgetByID<GUI::Button>("quitBtn")->getHook();
 	bool* appSettingsBool = GUI::Widget::getWidgetByID<GUI::Checkbox>("settingsBtn")->getHook();
 	GUI::Widget::getWidgetByID<GUI::Button>("updateBtn")->setText("Update", "weblysleekuil.ttf", sf::Color::White, 18, true, 0, -3);
-	GUI::Widget::getWidgetByID<GUI::LoadingBar>("updateBar")->fill(100, 1);
+	GUI::Widget::getWidgetByID<GUI::LoadingBar>("updateBar")->fill(80, 2);
 	sf::Vector2i grabbedOffset;
 
 	bool grabbedWindow = false;
@@ -140,8 +118,6 @@ int main()
 		gui.drawAllContainer(&window);
 		window.draw(linetop, 2, sf::Lines); window.draw(linemiddle, 2, sf::Lines); window.draw(linebottom, 2, sf::Lines);
 		window.draw(*curs.getSprite());
-		window.draw(rtext);
-		window.draw(utext);
 		window.display();
 	}
 }

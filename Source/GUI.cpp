@@ -2951,11 +2951,7 @@ void GUI::Button::setPushed()
 	}
 	if (functionBinded)
 	{
-		function(parameters);
-	}
-	if (voidFunctionBinded)
-	{
-		voidFunction();
+		futureFunction.wait();
 	}
 
 }
@@ -3108,18 +3104,18 @@ void GUI::Button::setTexture()
 	setTextureMap(&sprites[0], nameImageIdle);
 }
 
-void GUI::Button::bindFunction(std::function<void(DataObject*)> function, std::string parameters)
+/*void GUI::Button::bindFunction(std::function<void(DataObject*)> function, std::string parameters)
 {
 	this->parameters = parseBind(parameters);
 	this->function = function;
 	functionBinded = true;
-}
+}*/
 
-void GUI::Button::bindFunction(std::function<void()> function)
+/*void GUI::Button::bindFunction(std::function<void()> function)
 {
 	this->voidFunction = function;
 	voidFunctionBinded = true;
-}
+}*/
 
 /*GUI::NumericInput::NumericInput(std::string ID, int posX, int posY, int defaultValue, std::string style, std::string font, sf::Color fontColor, int fontSize) : Widget(ID, posX, posY, style)
 {

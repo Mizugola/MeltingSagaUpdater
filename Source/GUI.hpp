@@ -17,6 +17,7 @@
 #include <functional>
 #include <typeinfo>
 #include <fstream>
+#include <future>
 
 #include "RichText.hpp"
 #include "DataParser.hpp"
@@ -385,9 +386,7 @@ namespace GUI
 	class Button : public Widget
 	{
 	protected:
-		std::function<void(DataObject*)> function;
-		std::function<void()> voidFunction;
-		DataObject* parameters;
+		std::future<void> futureFunction;
 		Label* buttonLabel = NULL;
 		GUI::ButtonEvent prevState = GUI::ButtonEvent::None;
 		GUI::ButtonEvent currState = GUI::ButtonEvent::None;
@@ -425,8 +424,12 @@ namespace GUI
 		void setTexturePushed(const sf::Texture& texture);
 		virtual void setDisplayed(bool displayed);
 		virtual void updatePositions();
-		void bindFunction(std::function<void(DataObject*)> function, std::string parameters);
-		void bindFunction(std::function<void()> function);
+		template <typename Func>
+		void bindFunction(Func function)
+		{
+			futureFunction = std::async(std::launch::deferred, function);
+			functionBinded = true;
+		}
 		void updateAttributes();
 		Label* getLabel();//Return Label's button if the button has text, return NULL if not.
 		GUI::ButtonEvent* getHook();

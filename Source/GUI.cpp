@@ -1298,13 +1298,12 @@ void GUI::LoadingBar::draw(sf::RenderWindow* GUI)
 	}
 	if (fillingType == "Horizontal")
 	{
-		absolutesX[1] = absolutesX[0] + sideBordersWidth;
+		absolutesX[1] = absolutesX[0];
 		absolutesY[1] = absolutesY[0] + TopBotBordersHeight;
-		for (int i = 0; i < currentFillingPixels; i++)
+		for (int i = 0; i < currentFillingPixels - 1; i++)
 		{
-			sprites[1].setPosition(absolutesX[1], absolutesY[1]);
+			sprites[1].setPosition(absolutesX[1] + i, absolutesY[1]);
 			GUI->draw(sprites[1]);
-			absolutesX[1] += 1;
 		}
 	}
 	else if (fillingType == "Vertical")
@@ -1314,9 +1313,8 @@ void GUI::LoadingBar::draw(sf::RenderWindow* GUI)
 
 		for (int i = 0; i < currentFillingPixels; i++)
 		{
-			sprites[1].setPosition(absolutesX[1], absolutesY[1]);
+			sprites[1].setPosition(absolutesX[1], absolutesY[1] - i);
 			GUI->draw(sprites[1]);
-			absolutesY[1] -= 1;
 		}
 	}
 

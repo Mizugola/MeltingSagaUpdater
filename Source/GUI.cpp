@@ -1246,13 +1246,13 @@ void GUI::LoadingBar::fill(int percentage, double timeToFill)
 	{
 		if (percentage >= 100)
 		{
-			currentPixelsPerDraw = (100 * pixelsPerPercent - fillingInPixels) / (this->timeToFill / delay);
+			currentPixelsPerDraw = (100 * pixelsPerPercent - fillingInPixels) / std::round(this->timeToFill / delay);
 			fillingInPercentage = 100;
 			fillingInPixels = sprites[0].getGlobalBounds().width;
 		}
 		else
 		{
-			currentPixelsPerDraw = (percentage * pixelsPerPercent - fillingInPixels) / (this->timeToFill / delay);
+			currentPixelsPerDraw = (percentage * pixelsPerPercent - fillingInPixels) / std::round(this->timeToFill / delay);
 			fillingInPercentage = percentage;
 			fillingInPixels = percentage * pixelsPerPercent;
 		}
@@ -1294,6 +1294,7 @@ void GUI::LoadingBar::draw(sf::RenderWindow* GUI)
 	if (double(std::clock()) / CLOCKS_PER_SEC - timeBefore > delay && currentFillingPixels < fillingInPixels)
 	{
 		currentFillingPixels += currentPixelsPerDraw;
+
 		timeBefore = double(std::clock()) / CLOCKS_PER_SEC;
 	}
 	if (fillingType == "Horizontal")

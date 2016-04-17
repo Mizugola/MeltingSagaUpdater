@@ -616,7 +616,7 @@ namespace GUI
 		LoadingBar(std::string ID, int posX, int posY, std::string fillingType, std::string style, int sideBordersWidth, int TopBotBordersHeight);
 		void fill(int percentage, double timeToFill = 0.5);//permet de remplir la barre jusqu'a un certain pourcentage
 		virtual void draw(sf::RenderWindow* GUI);
-		void addFilling(int percentageToAdd);//Permet d'ajouter un certain pourcentage au remplissage actuel de la barre
+		void addFilling(int percentageToAdd, double timeToFill);//Permet d'ajouter un certain pourcentage au remplissage actuel de la barre
 		int getFilling();
 		bool isFilled();
 	};

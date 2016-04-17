@@ -1241,12 +1241,16 @@ void GUI::LoadingBar::setTexture()
 
 void GUI::LoadingBar::fill(int percentage, double timeToFill)
 {
-	this->timeToFill = timeToFill;
+	if (timeToFill < delay)
+		this->timeToFill = delay;
+	else
+		this->timeToFill = timeToFill;
 	if (percentage > fillingInPercentage)
 	{
 		if (percentage >= 100)
 		{
 			currentPixelsPerDraw = (100 * pixelsPerPercent - fillingInPixels) / std::round(this->timeToFill / delay);
+			std::cout << currentPixelsPerDraw << " " << (100 * pixelsPerPercent - fillingInPixels)  << " " << std::round(this->timeToFill / delay) << std::endl;
 			fillingInPercentage = 100;
 			fillingInPixels = sprites[0].getGlobalBounds().width;
 		}
@@ -1259,19 +1263,23 @@ void GUI::LoadingBar::fill(int percentage, double timeToFill)
 	}
 }
 
-void GUI::LoadingBar::addFilling(int percentageToAdd)
+void GUI::LoadingBar::addFilling(int percentageToAdd, double timeToFill)
 {
+	if (timeToFill < delay)
+		this->timeToFill = delay;
+	else
+		this->timeToFill = timeToFill;
 	if (fillingInPercentage + percentageToAdd >= 100)
 	{
+		currentPixelsPerDraw = (100 * pixelsPerPercent) / std::round(this->timeToFill / delay);
 		fillingInPercentage = 100;
 		fillingInPixels = sprites[0].getGlobalBounds().width;
-		currentFillingPixels = fillingInPixels;
 	}
 	else
 	{
+		currentPixelsPerDraw = (percentageToAdd * pixelsPerPercent) / std::round(this->timeToFill / delay);
 		fillingInPercentage += percentageToAdd;
 		fillingInPixels += percentageToAdd * pixelsPerPercent;
-		currentFillingPixels = fillingInPixels;
 	}
 }
 
@@ -1290,11 +1298,9 @@ int GUI::LoadingBar::getFilling()
 
 void GUI::LoadingBar::draw(sf::RenderWindow* GUI)
 {
-
-	if (double(std::clock()) / CLOCKS_PER_SEC - timeBefore > delay && currentFillingPixels < fillingInPixels)
+	if (double(std::clock()) / CLOCKS_PER_SEC - timeBefore > delay && (int)(std::round(currentFillingPixels)) < fillingInPixels)
 	{
 		currentFillingPixels += currentPixelsPerDraw;
-
 		timeBefore = double(std::clock()) / CLOCKS_PER_SEC;
 	}
 	if (fillingType == "Horizontal")
